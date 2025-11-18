@@ -1,17 +1,16 @@
-# movie_recommendation_api
+# Movie Recommendation API
 
-A production-grade backend service for a movie recommendation application.
-Built using Django, PostgreSQL, Redis, and JWT authentication, this service provides performant APIs for trending movies, personalized recommendations, user management, and storing favorite movies. All endpoints are documented with Swagger.
+A production-grade backend service for a movie recommendation application. Built using Django, PostgreSQL, Redis, and JWT authentication, this service provides performant APIs for trending movies, personalized recommendations, user management, and storing favorite movies. All endpoints are documented with Swagger.
 
 ## Project Overview
 
 This backend powers a movie recommendation platform with a focus on:
 
-- High-performance API design
-- Secure authentication
-- External API integration (TMDb)
-- Efficient caching for heavy movie data
-- Comprehensive API documentation for frontend integration
+- **High-performance API design** - Optimized endpoints with pagination and filtering
+- **Secure authentication** - JWT-based user authentication and authorization
+- **External API integration** - TMDb API integration for movie data
+- **Efficient caching** - Redis caching for heavy movie data
+- **Comprehensive API documentation** - Swagger UI for easy frontend integration
 
 The project follows real-world backend engineering practices including environment configuration, external API consumption, caching, ORM optimization, and continuous documentation.
 
@@ -25,23 +24,27 @@ The project follows real-world backend engineering practices including environme
 
 ### 2. User Management
 - JWT-based authentication
+- User registration and login
 - Users can save and retrieve favorite movies
+- User profile management
 
 ### 3. Performance Optimization
-Redis caching for:
-- trending movie responses
-- recommended movie responses
+- Redis caching for:
+  - Trending movie responses
+  - Recommended movie responses
+  - Popular and top-rated movies
 - Reduced external API calls
 - Lower response latency
 
 ### 4. Documentation
-- Swagger UI at /api/docs
+- Swagger UI at `/api/docs`
 - Auto-generated OpenAPI schema
+- ReDoc documentation at `/api/redoc`
 
 ## Technologies Used
 
 | Technology | Purpose |
-|------------|---------|
+|-----------|---------|
 | Django | Core backend framework |
 | Django REST Framework | API development |
 | PostgreSQL | Relational database |
@@ -53,100 +56,69 @@ Redis caching for:
 ## Key Features
 
 ### Movie Recommendation API
-- Fetch trending movies
-- Fetch recommended movies
-- Use external TMDb API
+- Fetch trending movies (daily/weekly)
+- Fetch popular movies
+- Fetch top-rated movies
+- Search movies by title
+- Get recommendations based on specific movie
 - Robust error handling for rate limits, timeouts, and malformed responses
 
 ### User Authentication & Preferences
-- JWT authentication
+- JWT authentication with access and refresh tokens
 - User registration and login
 - Store and retrieve favorite movies
+- Rate movies with reviews
 - Secure user-isolated data
 
 ### Performance Optimization
 - Redis caching layer for movie responses
-- Configurable cache expiration policies
+- Configurable cache expiration policies (15 minutes default)
 - Reduced load on external APIs
+- Database query optimization with indexes
 
 ### API Documentation
 - Auto-generated Swagger UI
 - OpenAPI-compliant documentation
-- Available at /api/docs
+- Available at `/api/docs`
+- ReDoc documentation at `/api/redoc`
 
-## Implementation Roadmap
-
-### Initial Setup
-- feat: initialize Django project with PostgreSQL configuration
-- feat: integrate TMDb API client
-
-### Feature Development
-- feat: create movie recommendation endpoints
-- feat: implement JWT authentication
-- feat: add favorite movie storage
-
-### Performance Optimization
-- perf: add Redis caching layer
-
-### Documentation
-- feat: integrate Swagger for API documentation
-- docs: update README with API reference and setup details
-
-## Project Structure (Planned)
+## Project Structure
 
 ```
 movie_recommendation_api/
 │
 ├── config/                       # Django project settings
-├── movies/                       # Movie API logic
-├── users/                        # Auth & favorites
-├── docs/                         # API documentation files
-├── requirements.txt
-├── README.md
-└── docker-compose.yml
-```
-
-## Setup Instructions
-
-### 1. Clone Repository
-```bash
-git clone https://github.com/<your-username>/movie_recommendation_api.git
-cd movie_recommendation_api
-```
-
-### 2. Virtual Environment
-```bash
-python3 -m venv venv
-source venv/bin/activate
-```
-
-### 3. Install Dependencies
-```bash
-pip install -r requirements.txt
-```
-
-### 4. Environment Variables
-
-Create a .env file:
-
-```
-SECRET_KEY=
-DEBUG=True
-POSTGRES_DB=
-POSTGRES_USER=
-POSTGRES_PASSWORD=
-REDIS_URL=redis://localhost:6379
-TMDB_API_KEY=
-```
-
-### 5. Migrations
-```bash
-python manage.py migrate
-```
-
-### 6. Run Server
-```bash
-python manage.py runserver
-```
-
-Swagger UI → http://127.0.0.1:8000/api/docs/
+│   ├── settings/
+│   │   ├── base.py              # Base settings
+│   │   ├── development.py       # Development settings
+│   │   └── production.py        # Production settings
+│   ├── urls.py                  # Main URL configuration
+│   ├── wsgi.py                  # WSGI configuration
+│   └── asgi.py                  # ASGI configuration
+│
+├── apps/
+│   ├── movies/                  # Movie API logic
+│   │   ├── models.py            # Movie, UserFavoriteMovie, MovieRating models
+│   │   ├── views.py             # API views
+│   │   ├── serializers.py       # DRF serializers
+│   │   ├── urls.py              # Movie app URLs
+│   │   ├── tmdb_client.py       # TMDb API client
+│   │   ├── admin.py             # Django admin configuration
+│   │   └── tests.py             # Unit tests
+│   │
+│   └── users/                   # Auth & user management
+│       ├── models.py            # Custom User model
+│       ├── views.py             # User views
+│       ├── serializers.py       # User serializers
+│       ├── urls.py              # User app URLs
+│       ├── admin.py             # Django admin configuration
+│       └── tests.py             # Unit tests
+│
+├── manage.py                    # Django management script
+├── requirements.txt             # Python dependencies
+├── .env                         # Environment variables (local)
+├── .env.example                 # Environment variables template
+├── .gitignore                   # Git ignore file
+├── Dockerfile                   # Docker configuration
+├── docker-compose.yml           # Docker Compose configuration
+└── README.md                    # This file

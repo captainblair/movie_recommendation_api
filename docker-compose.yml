@@ -1,0 +1,59 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:15
+    container_name: movie_db
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-movie_db}
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - movie_network
+
+  redis:
+    image: redis:7-alpine
+    container_name: movie_redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - movie_network
+
+  web:
+    build: .
+    container_name: movie_api
+    command: >
+      sh -c "python manage.py migrate &&
+             python manage.py runserver 0.0.0.0:8000"
+    volumes:
+      - .:/app
+    ports:
+      - "8000:8000"
+    environment:
+      - DEBUG=True
+      - POSTGRES_DB=${POSTGRES_DB:-movie_db}
+      - POSTGRES_USER=${POSTGRES_USER:-postgres}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-postgres}
+      - POSTGRES_HOST=db
+      - POSTGRES_PORT=5432
+      - REDIS_URL=redis://redis:6379/0
+      - TMDB_API_KEY=${TMDB_API_KEY}
+    depends_on:
+      - db
+      - redis
+    networks:
+      - movie_network
+
+volumes:
+  postgres_data:
+  redis_data:
+
+networks:
+  movie_network:
+    driver: bridge
