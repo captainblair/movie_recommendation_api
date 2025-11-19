@@ -11,11 +11,18 @@ import dj_database_url
 DEBUG = False
 
 # Render domain - Accept any onrender.com domain
-ALLOWED_HOSTS = [
-    'localhost',
-    '127.0.0.1',
-    '*.onrender.com',
-]
+# Get from environment or use defaults
+allowed_hosts_env = os.getenv('ALLOWED_HOSTS', '')
+if allowed_hosts_env:
+    ALLOWED_HOSTS = [host.strip() for host in allowed_hosts_env.split(',')]
+else:
+    ALLOWED_HOSTS = [
+        'localhost',
+        '127.0.0.1',
+        'movie-recommendation-api-h808.onrender.com',
+        'movie-recommendation-api.onrender.com',
+        '.onrender.com',  # Accept all onrender.com subdomains
+    ]
 
 # Database - PostgreSQL provided by Render
 DATABASES = {
