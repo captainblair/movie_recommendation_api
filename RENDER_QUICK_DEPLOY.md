@@ -31,9 +31,11 @@ Your code needs the new Render settings. Run in PowerShell:
 cd c:\Users\ADMIN\Downloads\movie_recommendation_api-1
 
 git add .
-git commit -m "Add Render deployment configuration"
+git commit -m "Fix: Use render settings in wsgi.py for Render deployment"
 git push origin main
 ```
+
+**Note:** I've already fixed the `config/wsgi.py` to use `config.settings.render` instead of `config.settings.production`. This ensures Render uses the correct logging configuration (console-only, no file logging).
 
 ---
 
@@ -54,24 +56,95 @@ Fill in these fields:
 | Field | Value |
 |-------|-------|
 | Name | `movie-recommendation-api` |
-| Environment | `Python 3` |
+| Service Type | `Web Service` |
+| Language | `Docker` |
 | Region | `Oregon (US West)` |
 | Branch | `main` |
-| Build Command | `pip install -r requirements.txt && python manage.py migrate --settings=config.settings.render && python manage.py collectstatic --noinput --settings=config.settings.render` |
-| Start Command | `gunicorn config.wsgi:application --bind 0.0.0.0:$PORT` |
+| Instance Type | `Free` (or `Starter` for production) |
+| Root Directory | (Leave empty - use repository root) |
 
 ---
 
 ## Step 5: Add Environment Variables
 
-Click **"Advanced"** and add:
+⚠️ **IMPORTANT:** Do NOT click **"Add from .env"** - this will import variables with invalid characters that Render rejects.
 
+Instead, click **"Add Environment Variable"** and fill in each variable separately:
+
+| Name | Value |
+|------|-------|
+| `DEBUG` | `False` |
+| `SECRET_KEY` | Generate a random key (see below) |
+| `ALLOWED_HOSTS` | `movie-recommendation-api.onrender.com` |
+| `TMDB_API_KEY` | `your-actual-tmdb-api-key` |
+
+**How to generate SECRET_KEY:**
+
+Run this in PowerShell:
+```powershell
+python -c "from django.core.management.utils import get_random_secret_key; print(get_random_secret_key())"
 ```
-DEBUG=False
-SECRET_KEY=your-very-secret-key-12345-change-this
-ALLOWED_HOSTS=movie-recommendation-api.onrender.com
-TMDB_API_KEY=your-tmdb-api-key-here
-```
+
+Or use: https://djecrety.ir/ (click refresh to generate, then copy the key)
+
+The key should be a long random string like: `django-insecure-abc123xyz789...`
+
+**How to fill in each variable:**
+1. Enter the **Name** in the left box (e.g., `DEBUG`)
+2. Enter the **Value** in the right box (e.g., `False`)
+3. Click **"Add Environment Variable"** to add the next one
+
+**Important - Variable Name Rules:**
+- Must contain only: letters (A-Z, a-z), digits (0-9), underscore `_`, hyphen `-`, or dot `.`
+- Must NOT start with a digit
+- Examples of valid names: `DEBUG`, `SECRET_KEY`, `TMDB_API_KEY`, `API.KEY`, `my-var`
+- Examples of invalid names: `1DEBUG`, `DEBUG!`, `SECRET KEY` (spaces not allowed)
+
+**Getting your TMDB_API_KEY:**
+1. Go to https://www.themoviedb.org/
+2. Create an account or log in
+3. Click your profile → **Settings** → **API**
+4. Click **"Create"** or **"Request an API Key"**
+5. Choose **"Developer"** and accept terms
+6. Fill in the TMDb Developer Plan form:
+
+| Field | Value |
+|-------|-------|
+| Application Name | `Movie Recommendation API` |
+| Application URL | `https://movie-recommendation-api.onrender.com` |
+| Type of Use | Select: **Website** |
+| Application Summary | `A Django REST API that provides movie recommendations using TMDb data. Built for educational purposes.` |
+| First Name | Your first name |
+| Last Name | Your last name |
+| Email Address | Your email |
+| Phone Number | Your phone number |
+| Address 1 | Your street address |
+| Address 2 | (Leave empty if not applicable) |
+| City | Your city |
+| State | Your state/province |
+| Zip Code | Your postal code |
+
+7. Click **"Submit"**
+8. Copy your API key and paste it as the value for `TMDB_API_KEY`
+
+---
+
+## Step 5a: Advanced Configuration
+
+Click **"Advanced"** and configure:
+
+| Field | Value |
+|-------|-------|
+| Secret Files | (Leave empty - not needed) |
+| Health Check Path | `/api/health/` (or leave empty for default) |
+| Registry Credential | `No credential` (using public Docker image) |
+| Docker Build Context Directory | (Leave empty - defaults to root) |
+| Dockerfile Path | `./Dockerfile` (default) |
+| Docker Command | (Leave empty - use Dockerfile CMD) |
+| Pre-Deploy Command | `python manage.py migrate` |
+| Auto-Deploy | `On Commit` (enabled) |
+| Build Filters - Included Paths | (Leave empty - deploy on all changes) |
+| Build Filters - Ignored Paths | (Leave empty - no ignored paths) |
 
 ---
 
