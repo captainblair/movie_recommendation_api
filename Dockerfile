@@ -21,6 +21,9 @@ RUN pip install --upgrade pip && \
 # Copy project
 COPY . /app/
 
+# Collect static files
+RUN python manage.py collectstatic --noinput --settings=config.settings.render || true
+
 # Expose port
 EXPOSE 8000
 
