@@ -75,8 +75,9 @@ Instead, click **"Add Environment Variable"** and fill in each variable separate
 |------|-------|
 | `DEBUG` | `False` |
 | `SECRET_KEY` | Generate a random key (see below) |
-| `ALLOWED_HOSTS` | `movie-recommendation-api.onrender.com` |
+| `ALLOWED_HOSTS` | `*.onrender.com,localhost,127.0.0.1` |
 | `TMDB_API_KEY` | `your-actual-tmdb-api-key` |
+| `DATABASE_URL` | Render will auto-provide this |
 
 **How to generate SECRET_KEY:**
 

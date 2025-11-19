@@ -10,11 +10,11 @@ import dj_database_url
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-# Render domain
+# Render domain - Accept any onrender.com domain
 ALLOWED_HOSTS = [
-    'movie-recommendation-api.onrender.com',
     'localhost',
-    '127.0.0.1'
+    '127.0.0.1',
+    '*.onrender.com',
 ]
 
 # Database - PostgreSQL provided by Render
