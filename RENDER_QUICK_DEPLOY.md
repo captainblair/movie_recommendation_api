@@ -39,6 +39,24 @@ git push origin main
 
 ---
 
+## Step 2.5: Create PostgreSQL Database on Render (IMPORTANT!)
+
+**You MUST create a database first, or the app won't work!**
+
+1. Go to https://dashboard.render.com
+2. Click **"New +"** → **"PostgreSQL"**
+3. Fill in:
+   - **Name**: `movie-recommendation-db`
+   - **Database**: `movie_db`
+   - **User**: `postgres`
+   - **Region**: `Oregon (US West)` (same as your Web Service)
+   - **Version**: Latest available
+4. Click **"Create Database"**
+5. **Wait 2-3 minutes** for the database to be created
+6. Copy the **Internal Database URL** (you'll need this)
+
+---
+
 ## Step 3: Create Web Service on Render (2 min)
 
 1. Log in to Render dashboard
@@ -77,7 +95,12 @@ Instead, click **"Add Environment Variable"** and fill in each variable separate
 | `SECRET_KEY` | Generate a random key (see below) |
 | `ALLOWED_HOSTS` | `*.onrender.com,localhost,127.0.0.1` |
 | `TMDB_API_KEY` | `your-actual-tmdb-api-key` |
-| `DATABASE_URL` | Render will auto-provide this |
+| `DATABASE_URL` | Copy from your PostgreSQL database (see below) |
+
+**How to get DATABASE_URL:**
+1. Go to your PostgreSQL database in Render
+2. Copy the **Internal Database URL** (looks like: `postgresql://user:password@host:5432/dbname`)
+3. Paste it as the value for `DATABASE_URL`
 
 **How to generate SECRET_KEY:**
 
