@@ -21,11 +21,14 @@ RUN pip install --upgrade pip && \
 # Copy project
 COPY . /app/
 
-# Collect static files
-RUN python manage.py collectstatic --noinput --settings=config.settings.render || true
+# Create staticfiles directory
+RUN mkdir -p /app/staticfiles
+
+# Collect static files (ignore errors if DB not available)
+RUN python manage.py collectstatic --noinput --settings=config.settings.render --clear 2>/dev/null || true
 
 # Expose port
 EXPOSE 8000
 
-# Run gunicorn
-CMD ["gunicorn", "--bind", "0.0.0.0:8000", "--workers", "4", "config.wsgi:application"]
+# Run gunicorn with static file serving
+CMD ["gunicorn", "--bind", "0.0.0.0:8000", "--workers", "4", "--access-logfile", "-", "--error-logfile", "-", "config.wsgi:application"]
